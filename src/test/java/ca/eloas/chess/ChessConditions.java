@@ -5,20 +5,24 @@ import org.assertj.core.api.Condition;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import static org.assertj.core.api.Assertions.allOf;
+
 public class ChessConditions {
-    public static Condition<Optional<Piece>> existingPieceThat(Predicate<Piece> predicate) {
-        return new Condition<>((p) -> predicate.test(p.orElseThrow(() -> new AssertionError("no such piece"))), "correct piece");
+
+    public static Condition<Optional<Piece>> ofType(PieceType type) {
+        return new Condition<>((p) -> p.map(n -> n.isOfType(type)).orElse(false), "of type " + type.name());
     }
 
-    public static Predicate<Piece> ofType(PieceType type) {
-        return (p) -> p.isOfType(type);
+    public static Condition<Optional<Piece>> isPlaced() {
+        return new Condition<>(Optional::isPresent, "is placed");
     }
 
-    public static Predicate<Piece> isWhite() {
-        return Piece::isWhite;
+
+    public static Condition<Optional<Piece>> isWhite() {
+        return new Condition<>((p) -> p.map(Piece::isWhite).orElse(false), "is black");
     }
 
-    public static Predicate<Piece> isBlack() {
-        return isWhite().negate();
+    public static Condition<Optional<Piece>> isBlack() {
+        return new Condition<>((p) -> p.map(n -> !n.isWhite()).orElse(false), "is black");
     }
 }
