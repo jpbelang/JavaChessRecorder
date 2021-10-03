@@ -15,6 +15,10 @@ public class Piece {
         return new Piece(true, pieceType);
     }
 
+    public static Piece createBlack(PieceType pieceType) {
+        return new Piece(false, pieceType);
+    }
+
     public boolean isWhite() {
         return white;
     }
