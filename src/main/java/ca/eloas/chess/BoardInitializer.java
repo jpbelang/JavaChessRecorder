@@ -1,33 +1,40 @@
 package ca.eloas.chess;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @FunctionalInterface
 public interface BoardInitializer {
 
+    private static Function<PieceType, Piece> white() {
+        return Piece::createWhite;
+    }
+
+    private static Function<PieceType, Piece> black() {
+        return Piece::createBlack;
+    }
+    
     BoardInitializer DEFAULT_WHITE = (b) -> {
-        Stream.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h').forEach(c -> b.placePiece(Piece.createWhite(PieceType.PAWN), c, 2));
-        b.placePiece(Piece.createWhite(PieceType.ROOK), 'a', 1);
-        b.placePiece(Piece.createWhite(PieceType.KNIGHT), 'b', 1);
-        b.placePiece(Piece.createWhite(PieceType.BISHOP), 'c', 1);
-        b.placePiece(Piece.createWhite(PieceType.QUEEN), 'd', 1);
-        b.placePiece(Piece.createWhite(PieceType.KING), 'e', 1);
-        b.placePiece(Piece.createWhite(PieceType.BISHOP), 'f', 1);
-        b.placePiece(Piece.createWhite(PieceType.KNIGHT), 'g', 1);
-        b.placePiece(Piece.createWhite(PieceType.ROOK), 'h', 1);
+        placeAll(b, white(), 2, 1);
     };
 
     BoardInitializer DEFAULT_BLACK = (b) -> {
-        Stream.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h').forEach(c -> b.placePiece(Piece.createBlack(PieceType.PAWN), c, 7));
-        b.placePiece(Piece.createBlack(PieceType.ROOK), 'a', 8);
-        b.placePiece(Piece.createBlack(PieceType.KNIGHT), 'b', 8);
-        b.placePiece(Piece.createBlack(PieceType.BISHOP), 'c', 8);
-        b.placePiece(Piece.createBlack(PieceType.QUEEN), 'd', 8);
-        b.placePiece(Piece.createBlack(PieceType.KING), 'e', 8);
-        b.placePiece(Piece.createBlack(PieceType.BISHOP), 'f', 8);
-        b.placePiece(Piece.createBlack(PieceType.KNIGHT), 'g', 8);
-        b.placePiece(Piece.createBlack(PieceType.ROOK), 'h', 8);
+        placeAll(b, black(), 7, 8);
     };
+
+    static private void placeAll(Board b, Function<PieceType, Piece> factory, int pawnRank, int leadersRank) {
+        Stream.of('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h').forEach(c -> b.placePiece(factory.apply((PieceType.PAWN)), c, pawnRank));
+        b.placePiece(factory.apply(PieceType.ROOK), 'a', leadersRank);
+        b.placePiece(factory.apply(PieceType.KNIGHT), 'b', leadersRank);
+        b.placePiece(factory.apply(PieceType.BISHOP), 'c', leadersRank);
+        b.placePiece(factory.apply(PieceType.QUEEN), 'd', leadersRank);
+        b.placePiece(factory.apply(PieceType.KING), 'e', leadersRank);
+        b.placePiece(factory.apply(PieceType.BISHOP), 'f', leadersRank);
+        b.placePiece(factory.apply(PieceType.KNIGHT), 'g', leadersRank);
+        b.placePiece(factory.apply(PieceType.ROOK), 'h', leadersRank);
+    }
+
 
 
     void initialize(Board b);
