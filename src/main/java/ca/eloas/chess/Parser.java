@@ -24,18 +24,10 @@ public class Parser {
             int moveNumber = Integer.parseInt(match.group(1));
             boolean isEllipsis = "..".equals(match.group(2));
             var white = match.group(3);
-            var black = Optional.ofNullable(match.group(5));
+            var black = match.group(5);
 
-            var whiteMatcher = COMMAND.matcher(white);
-            if (! whiteMatcher.matches() ) {
-                throw new RuntimeException();
-            }
-
-            var blackMatcher = black.map(COMMAND::matcher);
-            if ( blackMatcher.isPresent() && !blackMatcher.get().matches() ) {
-
-                throw new RuntimeException();
-            }
+            Matcher whiteMatcher = createWhiteMatcher(white);
+            Optional<Matcher> blackMatcher = createBlackMatcher(black);
 
             var whiteMove = whiteMatcher.group();
 
@@ -49,6 +41,24 @@ public class Parser {
         }
         
         return comm;
+    }
+
+    private Optional<Matcher> createBlackMatcher(String blackOrNull) {
+        var black = Optional.ofNullable(blackOrNull);
+        var blackMatcher = black.map(COMMAND::matcher);
+        if ( blackMatcher.isPresent() && !blackMatcher.get().matches() ) {
+
+            throw new RuntimeException();
+        }
+        return blackMatcher;
+    }
+
+    private Matcher createWhiteMatcher(String white) {
+        var whiteMatcher = COMMAND.matcher(white);
+        if (! whiteMatcher.matches() ) {
+            throw new RuntimeException();
+        }
+        return whiteMatcher;
     }
 
     protected void buildMove(int moveNumber, boolean isEllipsis, char whitePiece, String whiteTarget, char blackPiece, String blackTarget) {
