@@ -23,19 +23,19 @@ public class Parser {
 
             int moveNumber = Integer.parseInt(match.group(1));
             boolean isEllipsis = "..".equals(match.group(2));
-            var white = match.group(3);
-            var black = match.group(5);
+            var first = match.group(3);
+            var second = match.group(5);
 
-            Matcher whiteMatcher = createWhiteMatcher(white);
-            Optional<Matcher> blackMatcher = createBlackMatcher(black);
+            Matcher firstMatcher = createFirstMatcher(first);
+            Optional<Matcher> secondMatcher = createSecondMatcher(second);
 
-            var whiteMove = whiteMatcher.group();
+            var firstMove = firstMatcher.group();
 
-            Character blackPiece = blackMatcher.map(m -> m.group(0).charAt(0)).orElse('z');
-            String blackMove = blackMatcher.map(m -> m.group(0).substring(1)).orElse(null);
+            Character secondPiece = secondMatcher.map(m -> m.group(0).charAt(0)).orElse('z');
+            String secondMove = secondMatcher.map(m -> m.group(0).substring(1)).orElse(null);
             buildMove(moveNumber, isEllipsis,
-                    whiteMove.charAt(0), whiteMove.substring(1),
-                    blackPiece, blackMove);
+                    firstMove.charAt(0), firstMove.substring(1),
+                    secondPiece, secondMove);
             comm.add(() -> {});
             comm.add(() -> {});
         }
@@ -43,22 +43,22 @@ public class Parser {
         return comm;
     }
 
-    private Optional<Matcher> createBlackMatcher(String blackOrNull) {
-        var black = Optional.ofNullable(blackOrNull);
-        var blackMatcher = black.map(COMMAND::matcher);
-        if ( blackMatcher.isPresent() && !blackMatcher.get().matches() ) {
+    private Optional<Matcher> createSecondMatcher(String secondOrNull) {
+        var second = Optional.ofNullable(secondOrNull);
+        var secondMatcher = second.map(COMMAND::matcher);
+        if ( secondMatcher.isPresent() && !secondMatcher.get().matches() ) {
 
-            throw new RuntimeException();
+            throw new ChessParserException("error parsing second move");
         }
-        return blackMatcher;
+        return secondMatcher;
     }
 
-    private Matcher createWhiteMatcher(String white) {
-        var whiteMatcher = COMMAND.matcher(white);
-        if (! whiteMatcher.matches() ) {
-            throw new RuntimeException();
+    private Matcher createFirstMatcher(String first) {
+        var firstMatcher = COMMAND.matcher(first);
+        if (! firstMatcher.matches() ) {
+            throw new ChessParserException("error parsing first move");
         }
-        return whiteMatcher;
+        return firstMatcher;
     }
 
     protected void buildMove(int moveNumber, boolean isEllipsis, char whitePiece, String whiteTarget, char blackPiece, String blackTarget) {
