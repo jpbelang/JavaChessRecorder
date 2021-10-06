@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 public class Parser {
 
+    public record Move(char type, String move, String hint) {}
+
     private static final Pattern LINE = Pattern.compile("(\\d+)\\.(\\.\\.)? (\\S*)( (\\S*))?");
     private static final Pattern COMMAND = Pattern.compile("[PRNBQK][a-h][1-8]");
 
@@ -31,11 +33,7 @@ public class Parser {
 
             var firstMove = firstMatcher.group();
 
-            Character secondPiece = secondMatcher.map(m -> m.group(0).charAt(0)).orElse('z');
-            String secondMove = secondMatcher.map(m -> m.group(0).substring(1)).orElse(null);
-            buildMove(moveNumber, isEllipsis,
-                    firstMove.charAt(0), firstMove.substring(1),
-                    secondPiece, secondMove);
+            buildMove(moveNumber, isEllipsis, new Move(firstMove.charAt(0), firstMove.substring(1), ""), secondMatcher.map(m -> new Move(m.group(0).charAt(0), m.group(0).substring(1), "")));
             comm.add(() -> {});
             comm.add(() -> {});
         }
@@ -61,7 +59,7 @@ public class Parser {
         return firstMatcher;
     }
 
-    protected void buildMove(int moveNumber, boolean isEllipsis, char whitePiece, String whiteTarget, char blackPiece, String blackTarget) {
+    protected void buildMove(int moveNumber, boolean isEllipsis, Move firstMove, Optional<Move> secondMove) {
 
     }
 }
