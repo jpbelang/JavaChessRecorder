@@ -25,4 +25,8 @@ public class ChessConditions {
     public static Condition<Optional<Piece>> isBlack() {
         return new Condition<>((p) -> p.map(n -> !n.isWhite()).orElse(false), "is black");
     }
+
+    public static Condition<ChessMove> chessMove(PieceType type, String move) {
+        return new Condition<>((p) -> p.move().equals(move) && p.type() == type, "is type " + type + " and move " + move);
+    }
 }

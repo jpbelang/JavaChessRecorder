@@ -11,10 +11,14 @@ import java.util.regex.Pattern;
 
 public class Parser {
 
-    public record Move(char type, String move, String hint) {}
-
     private static final Pattern LINE = Pattern.compile("(\\d+)\\.(\\.\\.)? (\\S*)( (\\S*))?");
     private static final Pattern COMMAND = Pattern.compile("[PRNBQK][a-h][1-8]");
+
+    private final ChessCommandFactory commandFactory;
+
+    public Parser(ChessCommandFactory commandFactory) {
+        this.commandFactory = commandFactory;
+    }
 
     public List<ChessCommand> parseCommands(Reader reader) throws IOException {
 
@@ -32,10 +36,8 @@ public class Parser {
             Optional<Matcher> secondMatcher = createSecondMatcher(second);
 
             var firstMove = firstMatcher.group();
-
-            buildMove(moveNumber, isEllipsis, new Move(firstMove.charAt(0), firstMove.substring(1), ""), secondMatcher.map(m -> new Move(m.group(0).charAt(0), m.group(0).substring(1), "")));
-            comm.add(() -> {});
-            comm.add(() -> {});
+            comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(firstMove.charAt(0)), firstMove.substring(1), "")));
+            secondMatcher.ifPresent(m -> comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(m.group(0).charAt(0)), m.group(0).substring(1), ""))));
         }
         
         return comm;
@@ -59,7 +61,7 @@ public class Parser {
         return firstMatcher;
     }
 
-    protected void buildMove(int moveNumber, boolean isEllipsis, Move firstMove, Optional<Move> secondMove) {
+    protected void buildMove(int moveNumber, boolean isEllipsis, ChessMove firstMove, Optional<ChessMove> secondMove) {
 
     }
 }
