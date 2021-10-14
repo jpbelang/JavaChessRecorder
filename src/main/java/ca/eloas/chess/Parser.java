@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 public class Parser {
 
     private static final Pattern LINE = Pattern.compile("(\\d+)\\.(\\.\\.)? (\\S*)( (\\S*))?");
-    private static final Pattern COMMAND = Pattern.compile("[PRNBQK][a-h][1-8]");
+    private static final Pattern COMMAND = Pattern.compile("[PRNBQK]([a-h]?[1-8]?)?([a-h][1-8])");
 
     private final ChessCommandFactory commandFactory;
 
@@ -35,9 +35,9 @@ public class Parser {
             Matcher firstMatcher = createFirstMatcher(first);
             Optional<Matcher> secondMatcher = createSecondMatcher(second);
 
-            var firstMove = firstMatcher.group();
-            comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(firstMove.charAt(0)), firstMove.substring(1), "")));
-            secondMatcher.ifPresent(m -> comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(m.group(0).charAt(0)), m.group(0).substring(1), ""))));
+            var firstMove = firstMatcher.group(2);
+            comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(firstMatcher.group().charAt(0)), firstMove, firstMatcher.group(1))));
+            secondMatcher.ifPresent(m -> comm.add(commandFactory.createCommand(new ChessMove(PieceType.fromLetter(m.group(0).charAt(0)), m.group(0).substring(1), m.group(1)))));
         }
         
         return comm;

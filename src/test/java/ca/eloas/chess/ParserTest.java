@@ -50,4 +50,17 @@ class ParserTest {
         assertThat(chessMoves.getAllValues())
                 .haveAtLeastOne(chessMove(PieceType.BISHOP, "c6"));
     }
+
+    @Test
+    void parseOneMoveWithHint(@Mock ChessCommandFactory commandFactory) throws Exception {
+
+        var parser = new Parser(commandFactory);
+        when(commandFactory.createCommand(any())).thenReturn(() -> {});
+
+        var commands = parser.parseCommands(new StringReader("1. Bd5c6"));
+
+        verify(commandFactory, times(1)).createCommand(chessMoves.capture());
+        assertThat(chessMoves.getAllValues())
+                .haveAtLeastOne(chessMove(PieceType.BISHOP, "c6", "d5"));
+    }
 }

@@ -29,4 +29,9 @@ public class ChessConditions {
     public static Condition<ChessMove> chessMove(PieceType type, String move) {
         return new Condition<>((p) -> p.move().equals(move) && p.type() == type, "is type " + type + " and move " + move);
     }
+
+    public static Condition<ChessMove> chessMove(PieceType type, String move, String hint) {
+        return new Condition<>((p) -> p.move().equals(move) && p.type() == type && p.hint().equals(hint), "is type " + type + " and move " + move + " with hint " + hint);
+    }
+
 }

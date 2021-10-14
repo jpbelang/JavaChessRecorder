@@ -21,7 +21,7 @@ public enum PieceType {
 
     public static PieceType fromLetter(char c) {
 
-        return Optional.ofNullable(mapOfCharsToPieces.get(c)).orElseThrow(() -> new ChessParserException("no such piece" + c));
+        return Optional.ofNullable(mapOfCharsToPieces.get(c)).orElseThrow(() -> new ChessParserException("no such piece '" + c +"'"));
     }
 
 }
